@@ -3,14 +3,205 @@
 <head>
 	<title>Sircles</title>
 	<script type="text/javascript" src="assets/paper-full.js"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.0.4/howler.js"></script>
 	<link rel="stylesheet" type="text/css" href="assets/sircles.css">
 	<!-- Define inlined PaperScript associate it with myCanvas -->
 	<script type="text/paperscript" canvas="myCanvas">
+		
+		// keyboard layout object, color and sound
+		var keyData = {
+			q: {
+				sound: new Howl({
+		  		src: ['assets/A/bubbles.mp3']
+				}),
+				color: '#1abc9c'
+			},
+			w: {
+				sound: new Howl({
+		  		src: ['assets/A/clay.mp3']
+				}),
+				color: '#2ecc71'
+			},
+			e: {
+				sound: new Howl({
+		  		src: ['assets/A/confetti.mp3']
+				}),
+				color: '#3498db'
+			},
+			r: {
+				sound: new Howl({
+		  		src: ['assets/A/corona.mp3']
+				}),
+				color: '#9b59b6'
+			},
+				t: {
+				sound: new Howl({
+		  		src: ['assets/A/dotted-spiral.mp3']
+				}),
+				color: '#34495e'
+			},
+			y: {
+				sound: new Howl({
+		  		src: ['assets/A/flash-1.mp3']
+				}),
+				color: '#16a085'
+			},
+			u: {
+				sound: new Howl({
+		  		src: ['assets/A/flash-2.mp3']
+				}),
+				color: '#27ae60'
+			},
+			i: {
+				sound: new Howl({
+		  		src: ['assets/A/flash-3.mp3']
+				}),
+				color: '#2980b9'
+			},
+			o: {
+				sound: new Howl({
+					src: ['assets/A/glimmer.mp3']
+				}),
+				color: '#8e44ad'
+			},
+			p: {
+				sound: new Howl({
+		  		src: ['assets/A/moon.mp3']
+				}),
+				color: '#2c3e50'
+			},
+			a: {
+				sound: new Howl({
+		  		src: ['assets/A/pinwheel.mp3']
+				}),
+				color: '#f1c40f'
+			},
+			s: {
+				sound: new Howl({
+		  		src: ['assets/A/piston-1.mp3']
+				}),
+				color: '#e67e22'
+			},
+				d: {
+				sound: new Howl({
+		  		src: ['assets/A/piston-2.mp3']
+				}),
+				color: '#e74c3c'
+			},
+			f: {
+				sound: new Howl({
+		  		src: ['assets/A/prism-1.mp3']
+				}),
+				color: '#95a5a6'
+			},
+			g: {
+				sound: new Howl({
+		  		src: ['assets/A/prism-2.mp3']
+				}),
+				color: '#f39c12'
+			},
+			h: {
+				sound: new Howl({
+		  		src: ['assets/A/prism-3.mp3']
+				}),
+				color: '#d35400'
+			},
+			j: {
+				sound: new Howl({
+		  		src: ['assets/A/splits.mp3']
+				}),
+				color: '#1abc9c'
+			},
+			k: {
+				sound: new Howl({
+		  		src: ['assets/A/squiggle.mp3']
+				}),
+				color: '#2ecc71'
+			},
+			l: {
+				sound: new Howl({
+		  		src: ['assets/A/strike.mp3']
+				}),
+				color: '#3498db'
+			},
+			z: {
+				sound: new Howl({
+		  		src: ['assets/A/suspension.mp3']
+				}),
+				color: '#9b59b6'
+			},
+			x: {
+				sound: new Howl({
+		  		src: ['assets/A/timer.mp3']
+				}),
+				color: '#34495e'
+			},
+			c: {
+				sound: new Howl({
+		  		src: ['assets/A/ufo.mp3']
+				}),
+				color: '#16a085'
+			},
+			v: {
+				sound: new Howl({
+		  		src: ['assets/A/veil.mp3']
+				}),
+				color: '#27ae60'
+			},
+			b: {
+				sound: new Howl({
+		  		src: ['assets/A/wipe.mp3']
+				}),
+				color: '#2980b9'
+			},
+			n: {
+				sound: new Howl({
+					src: ['assets/A/zig-zag.mp3']
+				}),
+				color: '#8e44ad'
+			},
+			m: {
+				sound: new Howl({
+		  		src: ['assets/A/moon.mp3']
+				}),
+				color: '#2c3e50'
+			}
+		}
+
+		// create new circles into this empty array
+		var circles = [];
+
+		// On hitting a key
 		function onKeyDown(event){
-			var maxPoint = new Point(view.size.width, view.size.height);
-			var randomPoint = Point.random();
-			var point = maxPoint * randomPoint;
-			new Path.Circle(point, 10).fillColor = "purple";
+			// if you hit a key in keyData (keyboard letters)
+			if(keyData[event.key]){
+				//create a random point in the viewable area
+				var maxPoint = new Point(view.size.width, view.size.height);
+				var randomPoint = Point.random();
+				var point = maxPoint * randomPoint;
+				// create a new circle using random point coordinates
+				var newCircle = new Path.Circle(point, 500)
+				// fill color and sound played from the keyData object
+				newCircle.fillColor = keyData[event.key].color;
+				keyData[event.key].sound.play();
+				// add new circle to circles array
+				circles.push(newCircle);
+			}
+			// if key is not in keyData (not a letter) do nothing
+		}
+
+		// animation
+		function onFrame(event){
+			for(var i = 0; i < circles.length; i++){
+			// change fill hue and reduce size
+			circles[i].fillColor.hue += 2;
+			circles[i].scale(.96);
+				// when the circle is less than 1 remove from array
+				if(circles[i].area < 1){
+			      circles[i].remove();
+			      circles.splice(i, 1);
+			    }
+			}
 		}
 
 	</script>
